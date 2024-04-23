@@ -48,7 +48,7 @@ body {
 
 <script language="javascript">
 	function F_Launch(IN){
-		var V_URL="https://collegelacite.lightning.force.com/lightning/r/Contact/"+IN+"/view";
+		var V_URL="https://collegelacite--devfull.sandbox.lightning.force.com/lightning/r/Contact/"+IN+"/view";
 		window.open(V_URL,'Landis-SF');
 		return;	
 	}
