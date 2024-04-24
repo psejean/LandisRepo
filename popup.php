@@ -3,19 +3,22 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Get parameters from the URL
-$ScenarioId = isset($_GET['ScenarioId']) ? $_GET['ScenarioId'] : '';
-$CallerNumber = isset($_GET['CallerNumber']) ? $_GET['CallerNumber'] : '';
-$CallerName = isset($_GET['CallerName']) ? $_GET['CallerName'] : '';
-$StudentID = isset($_GET['StudentID']) ? $_GET['StudentID'] : '';
-$ContactID = isset($_GET['ContactID']) ? $_GET['ContactID'] : '';
-$ContactName = isset($_GET['ContactName']) ? $_GET['ContactName'] : '';
+// Get ScenarioId from the URL
+$ScenarioId = $_GET['ScenarioId'];
 
 // Define the URL of your Power Automate flow
-$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId=' . $ScenarioId;
+$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId='.$ScenarioId;
+
+// Define default values for other parameters (if needed)
+$CallerNumber = $_GET['CallerNumber'] ?? '';
+$CallerName = $_GET['CallerName'] ?? '';
+$StudentID = $_GET['StudentID'] ?? '';
+$ContactID = $_GET['ContactID'] ?? '';
+$ContactName = $_GET['ContactName'] ?? '';
 
 // Define the data to be sent to the flow
 $data = array(
+    'ScenarioId' => $ScenarioId,
     'CallerNumber' => $CallerNumber,
     'CallerName' => $CallerName,
     'StudentID' => $StudentID,
@@ -47,7 +50,6 @@ curl_close($ch);
 // Output response from Power Automate (if needed)
 echo $response;
 ?>
-
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
