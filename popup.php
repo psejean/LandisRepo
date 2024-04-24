@@ -16,6 +16,13 @@ $StudentID = $_GET['StudentID'] ?? '';
 $ContactID = $_GET['ContactID'] ?? '';
 $ContactName = $_GET['ContactName'] ?? '';
 
+// Ensure $ContactID and $ContactName are not empty strings
+if (!empty($ContactID) && !empty($ContactName)) {
+    // If they are not empty, convert them to arrays
+    $ContactID = explode(',', $ContactID);
+    $ContactName = explode(',', $ContactName);
+}
+
 // Define the data to be sent to the flow
 $data = array(
     'ScenarioId' => $ScenarioId,
@@ -107,11 +114,16 @@ body {
     <p>&nbsp;</p>
     <table width="80%" border="4" align="center">
       <tbody>
-        <?php for($i = 0; $i < count($ContactID); $i++): ?>
-        <tr>
-          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?php echo trim($ContactID[$i]); ?>')"><?php echo trim($ContactName[$i]); ?><BR><?php echo trim($ContactID[$i]); ?></td>
-        </tr>
-        <?php endfor; ?>
+        <?php 
+        if (!empty($ContactID) && is_array($ContactID)) {
+            foreach ($ContactID as $index => $id) {
+                $name = isset($ContactName[$index]) ? $ContactName[$index] : '';
+                echo "<tr>";
+                echo "<td align='center' valign='middle' bgcolor='#9297FF' onClick=\"F_Launch('$id')\">$name<BR>$id</td>";
+                echo "</tr>";
+            }
+        }
+        ?>
       </tbody>
 </table>
 </body>
