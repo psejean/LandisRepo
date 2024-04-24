@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Get parameters from the URL
 $ScenarioId = $_GET['ScenarioId'];
 $CallerNumber = $_GET['CallerNumber'];
 $CallerName = $_GET['CallerName'];
@@ -10,7 +11,44 @@ $StudentID = $_GET['StudentID'];
 $ContactID = $_GET['ContactID'];
 $ContactName = $_GET['ContactName'];
 
+// Define the URL of your Power Automate flow
+$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01';
+
+// Define the data to be sent to the flow
+$data = array(
+    'ScenarioId' => $ScenarioId,
+    'CallerNumber' => $CallerNumber,
+    'CallerName' => $CallerName,
+    'StudentID' => $StudentID,
+    'ContactID' => $ContactID,
+    'ContactName' => $ContactName
+);
+
+// Create JSON payload for the request
+$payload = json_encode($data);
+
+// Set up the cURL session
+$ch = curl_init($flowUrl);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Execute the cURL request
+$response = curl_exec($ch);
+
+// Check for errors
+if(curl_error($ch)) {
+    echo 'Error: ' . curl_error($ch);
+}
+
+// Close cURL session
+curl_close($ch);
+
+// Output response from Power Automate (if needed)
+echo $response;
 ?>
+
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
