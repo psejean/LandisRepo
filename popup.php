@@ -1,32 +1,15 @@
-<?PHP
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-	$ScenarioId=$_GET['ScenarioId'];
+$ScenarioId = $_GET['ScenarioId'];
+$CallerNumber = $_GET['CallerNumber'];
+$CallerName = $_GET['CallerName'];
+$StudentID = $_GET['StudentID'];
+$ContactID = $_GET['ContactID'];
+$ContactName = $_GET['ContactName'];
 
-	//Establishes the connection
-	try {
-    		$conn = new PDO("sqlsrv:server = tcp:sql-landis.database.windows.net,1433; Database = landis", "sa.local", "L3tM3!nSQL");
-   		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	}
-	catch (PDOException $e) {
-    		print("Error connecting to SQL Server.<BR>");
-    		die(print_r($e));
-	}
-
-	$sql = "SELECT * FROM BAR WHERE ScenarioId like '".$ScenarioId."'";
-	$data = $conn->query($sql)->fetchAll();
-	$Count=0;
-	foreach ($data as $row) {
-   		$CallerNumber		= $row['CallerNumber'];
-		$CallerName		= $row['CallerName'];
-		$StudentID		= $row['StudentID'];
-		$ContactID[$Count]	= $row['ContactID'];
-		$ContactName[$Count]	= $row['ContactName'];
-
-		$Count++;
-	}
 ?>
 
 <!doctype html>
@@ -48,7 +31,7 @@ body {
 
 <script language="javascript">
 	function F_Launch(IN){
-		var V_URL="https://collegelacite--devfull.sandbox.lightning.force.com/lightning/r/Contact/"+IN+"/view";
+		var V_URL="https://collegelacite.lightning.force.com/lightning/r/Contact/"+IN+"/view";
 		window.open(V_URL,'Landis-SF');
 		return;	
 	}
@@ -66,30 +49,30 @@ body {
 	  <tbody>
 	    <tr>
 	      <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">ScenarioId</td>
-	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $ScenarioId; ?></td>
+	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $ScenarioId; ?></td>
         </tr>
 	    <tr>
 	      <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">CallerNumber</td>
-	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $CallerNumber; ?></td>
+	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $CallerNumber; ?></td>
         </tr>
 	    <tr>
 	      <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">CallerName</td>
-	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $CallerName; ?></td>
+	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $CallerName; ?></td>
         </tr>
 	    <tr>
 	      <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">StudentID</td>
-	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $StudentID; ?></td>
+	      <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $StudentID; ?></td>
         </tr>
       </tbody>
 </table>
 	<p>&nbsp;</p>
 	<table width="80%" border="4" align="center">
 	  <tbody>
-		  <?PHP for($i=0;$i<count($ContactID);$i++): ?>
+	    <?php for($i = 0; $i < count($ContactID); $i++): ?>
 	    <tr>
-	      <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?PHP echo trim($ContactID[$i]); ?>')"><?PHP echo trim($ContactName[$i]); ?><BR><?PHP echo trim($ContactID[$i]); ?></td>
+	      <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?php echo trim($ContactID[$i]); ?>')"><?php echo trim($ContactName[$i]); ?><BR><?php echo trim($ContactID[$i]); ?></td>
         </tr>
-		  <?PHP endfor; ?>
+		<?php endfor; ?>
       </tbody>
 </table>
 </body>
