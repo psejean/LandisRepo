@@ -12,7 +12,7 @@ $ContactID = $_GET['ContactID'];
 $ContactName = $_GET['ContactName'];
 
 // Define the URL of your Power Automate flow
-$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01';
+$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId={ScenarioId}';
 
 // Define the data to be sent to the flow
 $data = array(
