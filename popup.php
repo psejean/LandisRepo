@@ -3,11 +3,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Get ScenarioId from the URL
-$ScenarioId = $_GET['ScenarioId'];
+// Hardcoded ScenarioId for testing
+$ScenarioId = '112233444';
 
 // Define the URL of your Power Automate flow
-$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId=112233444';
+$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId='.$ScenarioId;
 
 // Define default values for other parameters (if needed)
 $CallerNumber = $_GET['CallerNumber'] ?? '';
@@ -106,25 +106,4 @@ body {
           <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $CallerName; ?></td>
         </tr>
         <tr>
-          <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">StudentID</td>
-          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $StudentID; ?></td>
-        </tr>
-      </tbody>
-</table>
-    <p>&nbsp;</p>
-    <table width="80%" border="4" align="center">
-      <tbody>
-        <?php 
-        if (!empty($ContactID) && is_array($ContactID)) {
-            foreach ($ContactID as $index => $id) {
-                $name = isset($ContactName[$index]) ? $ContactName[$index] : '';
-                echo "<tr>";
-                echo "<td align='center' valign='middle' bgcolor='#9297FF' onClick=\"F_Launch('$id')\">$name<BR>$id</td>";
-                echo "</tr>";
-            }
-        }
-        ?>
-      </tbody>
-</table>
-</body>
-</html>
+          <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">S
