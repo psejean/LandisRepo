@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 $ScenarioId = $_GET['ScenarioId'];
 
 // Define the URL of your Power Automate flow
-$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId='.$ScenarioId;
+$flowUrl = 'https://prod-74.westus.logic.azure.com:443/workflows/51955eb8bdf84eec89268f4d1b0e9b1f/triggers/manual/paths/invoke?api-version=2016-06-01&ScenarioId=112233444';
 
 // Define default values for other parameters (if needed)
 $CallerNumber = $_GET['CallerNumber'] ?? '';
