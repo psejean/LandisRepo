@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 // Function to log messages to a file
 function logMessage($message) {
     $logFile = 'salesforce_logs.txt';
@@ -8,8 +10,8 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
-// Get ScenarioId from the URL
-$ScenarioId = $_GET['ScenarioId'];
+// Get ScenarioId from the URL and sanitize it
+$ScenarioId = isset($_GET['ScenarioId']) ? htmlspecialchars($_GET['ScenarioId']) : '';
 
 // Salesforce OAuth 2.0 details
 $salesforceLoginUrl = 'https://test.salesforce.com';
@@ -44,67 +46,70 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // Execute cURL request
 $authResponse = curl_exec($ch);
 
-// Check for errors
+// Check for errors in authentication response
 if (curl_error($ch)) {
     // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
+    logMessage("cURL error during authentication: " . curl_error($ch));
 }
 
 // Decode the JSON response
 $authData = json_decode($authResponse, true);
 
-// Extract access token
-$accessToken = $authData['access_token'];
+// Check if authentication was successful
+if (isset($authData['access_token'])) {
+    // Extract access token
+    $accessToken = $authData['access_token'];
 
-// Log access token
-logMessage("Access token obtained: $accessToken");
+    // Log access token
+    logMessage("Access token obtained: $accessToken");
 
-// Salesforce API endpoint for custom object query
-$salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
+    // Salesforce API endpoint for custom object query
+    $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
 
-// Query to retrieve data from Salesforce
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
+    // Query to retrieve data from Salesforce
+    $query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
-// Set up cURL session for Salesforce API call
-curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
-curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $accessToken"));
+    // Set up cURL session for Salesforce API call
+    curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $accessToken"));
 
-// Execute cURL request to Salesforce API
-$response = curl_exec($ch);
+    // Execute cURL request to Salesforce API
+    $response = curl_exec($ch);
 
-// Check for errors
-if (curl_error($ch)) {
-    // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
-}
+    // Check for errors in query response
+    if (curl_error($ch)) {
+        // Log cURL error
+        logMessage("cURL error during query execution: " . curl_error($ch));
+    }
 
-// Close cURL session
-curl_close($ch);
+    // Close cURL session
+    curl_close($ch);
 
-// Decode JSON response from Salesforce API
-$result = json_decode($response, true);
+    // Decode JSON response from Salesforce API
+    $result = json_decode($response, true);
 
-// Log Salesforce response
-logMessage("Salesforce response: " . json_encode($result));
+    // Log Salesforce response
+    logMessage("Salesforce response: " . json_encode($result));
 
-// Check if $result is empty or null or if records are empty
-if (empty($result) || !isset($result['records']) || empty($result['records'])) {
-    // Handle the case when no records are returned
-    echo "No records found for the provided ScenarioId.";
+    // Extract data from Salesforce response (assuming only one record is returned)
+    if (!empty($result['records'])) {
+        $record = $result['records'][0];
+        $CallerNumber = isset($record['CallerNumber__c']) ? $record['CallerNumber__c'] : 'N/A';
+        $CallerName = isset($record['CallerName__c']) ? $record['CallerName__c'] : 'N/A';
+        $StudentID = isset($record['StudentID__c']) ? $record['StudentID__c'] : 'N/A';
+        $ContactID = isset($record['Contact__c']) ? $record['Contact__c'] : 'N/A';
+        $ContactName = isset($record['ContactName__c']) ? $record['ContactName__c'] : 'N/A';
+    } else {
+        // No records found
+        $CallerNumber = $CallerName = $StudentID = $ContactID = $ContactName = 'N/A';
+    }
 } else {
-    // Extract data from Salesforce response
-    $CallerNumber = isset($result['records'][0]['CallerNumber__c']) ? $result['records'][0]['CallerNumber__c'] : '';
-    $CallerName = isset($result['records'][0]['CallerName__c']) ? $result['records'][0]['CallerName__c'] : '';
-    $StudentID = isset($result['records'][0]['StudentID__c']) ? $result['records'][0]['StudentID__c'] : '';
-    $ContactID = isset($result['records'][0]['Contact__c']) ? $result['records'][0]['Contact__c'] : '';
-    $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
-
-    // Log extracted data
-    logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
+    // Authentication failed, set default values for variables
+    $CallerNumber = $CallerName = $StudentID = $ContactID = $ContactName = 'N/A';
+    logMessage("Salesforce authentication failed.");
 }
 
 ?>
-
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -124,11 +129,11 @@ body {
 </head>
 
 <script language="javascript">
-    function F_Launch(IN){
-        var V_URL="https://collegelacite.lightning.force.com/lightning/r/Contact/"+IN+"/view";
-        window.open(V_URL,'Landis-SF');
-        return;    
-    }
+function F_Launch(IN){
+    var V_URL="https://collegelacite.lightning.force.com/lightning/r/Contact/"+IN+"/view";
+    window.open(V_URL,'Landis-SF');
+    return; 
+}
 </script>
 
 <body>
@@ -143,19 +148,19 @@ body {
       <tbody>
         <tr>
           <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">ScenarioId</td>
-          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $ScenarioId; ?></td>
+          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $ScenarioId; ?></td>
         </tr>
         <tr>
           <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">CallerNumber</td>
-          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $CallerNumber; ?></td>
+          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $CallerNumber; ?></td>
         </tr>
         <tr>
           <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">CallerName</td>
-          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $CallerName; ?></td>
+          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $CallerName; ?></td>
         </tr>
         <tr>
           <td width="25%" align="right" valign="middle" bgcolor="#AAAAAA" style="font-size: 18px">StudentID</td>
-          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?PHP echo $StudentID; ?></td>
+          <td align="left" valign="middle" bgcolor="#FFFFFF" style="font-size: 18px; color: #000000;"><?php echo $StudentID; ?></td>
         </tr>
       </tbody>
 </table>
@@ -163,7 +168,7 @@ body {
     <table width="80%" border="4" align="center">
       <tbody>
         <tr>
-          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?PHP echo trim($ContactID); ?>')"><?PHP echo trim($ContactName); ?><BR><?PHP echo trim($ContactID); ?></td>
+          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?php echo trim($ContactID); ?>')"><?php echo trim($ContactName); ?><BR><?php echo trim($ContactID); ?></td>
         </tr>
       </tbody>
 </table>
