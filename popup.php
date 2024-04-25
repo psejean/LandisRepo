@@ -104,6 +104,9 @@ if (curl_error($ch)) {
 // Log the cURL response
 logMessage("cURL response: $response");
 
+// Echo the response for debugging
+echo "cURL Response: $response\n";
+
 // Close cURL session
 curl_close($ch);
 
