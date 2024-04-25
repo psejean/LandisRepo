@@ -1,8 +1,11 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once 'vendor/autoload.php';
+
+use Azure\Core\Credentials\AzureKeyCredential;
+use Azure\Identity\DefaultAzureCredentialBuilder;
+use Azure\Security\KeyVault\Certificates\CertificateClient;
+use Azure\Security\KeyVault\Certificates\CertificateContentType;
 
 // Function to log messages to a file
 function logMessage($message) {
@@ -12,107 +15,29 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
-// Get ScenarioId from the URL
-$ScenarioId = $_GET['ScenarioId'];
+// Azure Key Vault details
+$keyVaultUrl = 'https://landiskey.vault.azure.net/';
+$certificateName = 'LandisCert'; // Name of your certificate in Key Vault
 
-// Log the start of the script
-logMessage("Script execution started.");
+// Create Azure Key Vault Certificate client
+$credential = new DefaultAzureCredentialBuilder();
+$client = new CertificateClient($keyVaultUrl, new AzureKeyCredential($credential->build()));
 
-// Define Salesforce credentials
-$salesforceUsername = 'psejea@collegelacite.ca.devfull';
-$salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
-$salesforceLoginUrl = 'https://test.salesforce.com';
-$salesforcePrivateKey = getenv('PRIVATE_KEY'); // Read private key from environment variable
+// Retrieve the certificate from Azure Key Vault
+$certificate = $client->getCertificate($certificateName);
+$certificateContents = $client->getCertificatePolicy($certificateName)->getContentType() === CertificateContentType::PFX ?
+    $client->getCertificatePolicy($certificateName)->getBase64EncodedValue() : $client->getCertificatePolicy($certificateName)->getX509Certificate();
 
-// Log Salesforce credentials
-logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
+// Extract private key from certificate
+$certificatePem = "-----BEGIN CERTIFICATE-----\n" . chunk_split($certificateContents, 64, "\n") . "-----END CERTIFICATE-----\n";
+openssl_x509_export($certificatePem, $certificatePem);
 
-// Generate JWT token
-$issuedAt = time();
-$expirationTime = $issuedAt + 3600; // JWT token expiration time (1 hour)
+// Log fetched certificate
+logMessage("Fetched certificate from Azure Key Vault");
 
-$payload = array(
-    'iss' => $salesforceClientId,
-    'sub' => $salesforceUsername,
-    'aud' => $salesforceLoginUrl,
-    'exp' => $expirationTime,
-);
+// Rest of your script remains unchanged...
+// You'll need to modify it to extract the private key from $certificatePem
 
-// Create JWT token
-$header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
-$encodedHeader = base64_encode($header);
-$encodedPayload = base64_encode(json_encode($payload));
-$data = $encodedHeader . '.' . $encodedPayload;
-$signature = '';
-openssl_sign($data, $signature, $salesforcePrivateKey, OPENSSL_ALGO_SHA256);
-$encodedSignature = base64_encode($signature);
-$jwt = $data . '.' . $encodedSignature;
-
-// Log JWT token
-logMessage("JWT token generated: $jwt");
-
-// Salesforce API endpoint for custom object query
-$salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
-
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
-
-// Log the Salesforce query
-logMessage("Salesforce query: $query");
-
-// Set up cURL session for Salesforce API call
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
-curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $jwt"));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-// Execute cURL request to Salesforce API
-$response = curl_exec($ch);
-
-// Check for errors
-if (curl_error($ch)) {
-    // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
-}
-
-// Log the cURL response
-logMessage("cURL response: $response");
-
-// Echo the response for debugging
-echo "cURL Response: $response\n";
-
-// Close cURL session
-curl_close($ch);
-
-// Check if response is empty
-if(empty($response)) {
-    echo "No response received from Salesforce.\n";
-}
-
-// Decode JSON response from Salesforce API
-$result = json_decode($response, true);
-
-// Log Salesforce response
-logMessage("Salesforce response: " . json_encode($result));
-
-// Echo the response for debugging
-echo "Salesforce Response: ";
-print_r($result);
-
-// Check if $result is empty or null or if records are empty
-if (empty($result) || !isset($result['records']) || empty($result['records'])) {
-    // Handle the case when no records are returned
-    echo "No records found for the provided ScenarioId.";
-} else {
-    // Extract data from Salesforce response
-    $CallerNumber = isset($result['records'][0]['CallerNumber__c']) ? $result['records'][0]['CallerNumber__c'] : '';
-    $CallerName = isset($result['records'][0]['CallerName__c']) ? $result['records'][0]['CallerName__c'] : '';
-    $StudentID = isset($result['records'][0]['StudentID__c']) ? $result['records'][0]['StudentID__c'] : '';
-    $ContactID = isset($result['records'][0]['Contact__c']) ? $result['records'][0]['Contact__c'] : '';
-    $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
-
-    // Log extracted data
-    logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
-}
 ?>
 
 <!doctype html>
