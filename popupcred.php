@@ -162,11 +162,9 @@ body {
     <p>&nbsp;</p>
     <table width="80%" border="4" align="center">
       <tbody>
-          <?PHP for($i=0;$i<count($ContactID);$i++): ?>
         <tr>
-          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?PHP echo trim($ContactID[$i]); ?>')"><?PHP echo trim($ContactName[$i]); ?><BR><?PHP echo trim($ContactID[$i]); ?></td>
+          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?PHP echo trim($ContactID); ?>')"><?PHP echo trim($ContactName); ?><BR><?PHP echo trim($ContactID); ?></td>
         </tr>
-          <?PHP endfor; ?>
       </tbody>
 </table>
 </body>
