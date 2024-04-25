@@ -1,7 +1,5 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
 // Function to log messages to a file
 function logMessage($message) {
     $logFile = 'salesforce_logs.txt';
@@ -31,19 +29,20 @@ $authParams = array(
     'client_id' => $salesforceClientId,
     'client_secret' => $salesforceClientSecret,
     'username' => $salesforceUsername,
-    'password' => 'a;kA5-8UdBzPe1wuotnE6eungIJDH1WyYM5'
+    'password' => $salesforcePassword . $salesforceSecurityToken // Include the security token in the password
 );
 
 // Initialize cURL session
 $ch = curl_init();
+
+// Set cURL options for authentication
 curl_setopt($ch, CURLOPT_URL, $authUrl);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($authParams));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-// Execute cURL request to authenticate with Salesforce
-$response = curl_exec($ch);
+// Execute cURL request
+$authResponse = curl_exec($ch);
 
 // Check for errors
 if (curl_error($ch)) {
@@ -51,20 +50,14 @@ if (curl_error($ch)) {
     logMessage("cURL error: " . curl_error($ch));
 }
 
-// Log the authentication response
-logMessage("Authentication response: $response");
-
-// Decode JSON response
-$authResponse = json_decode($response, true);
+// Decode the JSON response
+$authData = json_decode($authResponse, true);
 
 // Extract access token
-$accessToken = isset($authResponse['access_token']) ? $authResponse['access_token'] : '';
+$accessToken = $authData['access_token'];
 
 // Log access token
-logMessage("Access token: $accessToken");
-
-// Close cURL session
-curl_close($ch);
+logMessage("Access token obtained: $accessToken");
 
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
@@ -72,14 +65,9 @@ $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.co
 // Query to retrieve data from Salesforce
 $query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
-// Log the Salesforce query
-logMessage("Salesforce query: $query");
-
-// Set up cURL session for Salesforce API call with access token
-$ch = curl_init();
+// Set up cURL session for Salesforce API call
 curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
 curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $accessToken"));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 // Execute cURL request to Salesforce API
 $response = curl_exec($ch);
@@ -90,29 +78,14 @@ if (curl_error($ch)) {
     logMessage("cURL error: " . curl_error($ch));
 }
 
-// Log the cURL response
-logMessage("cURL response: $response");
-
-// Echo the response for debugging
-echo "cURL Response: $response\n";
-
 // Close cURL session
 curl_close($ch);
-
-// Check if response is empty
-if (empty($response)) {
-    echo "No response received from Salesforce.\n";
-}
 
 // Decode JSON response from Salesforce API
 $result = json_decode($response, true);
 
 // Log Salesforce response
 logMessage("Salesforce response: " . json_encode($result));
-
-// Echo the response for debugging
-echo "Salesforce Response: ";
-print_r($result);
 
 // Check if $result is empty or null or if records are empty
 if (empty($result) || !isset($result['records']) || empty($result['records'])) {
@@ -129,7 +102,9 @@ if (empty($result) || !isset($result['records']) || empty($result['records'])) {
     // Log extracted data
     logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
 }
+
 ?>
+
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
