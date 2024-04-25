@@ -156,10 +156,13 @@ function F_Launch(IN){
     <p>&nbsp;</p>
     <table width="80%" border="4" align="center">
       <tbody>
+        <?php foreach ($result['records'] as $record): ?>
         <tr>
-          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?php echo trim($ContactID); ?>')"><?php echo trim($ContactName); ?><BR><?php echo trim($ContactID); ?></td>
+          <td align="center" valign="middle" bgcolor="#9297FF" onClick="F_Launch('<?php echo trim($record['Contact__c']); ?>')"><?php echo trim($record['ContactName__c']); ?><BR><?php echo trim($record['Contact__c']); ?></td>
         </tr>
+        <?php endforeach; ?>
       </tbody>
 </table>
 </body>
 </html>
+
