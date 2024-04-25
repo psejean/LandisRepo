@@ -54,7 +54,7 @@ try {
     logMessage("Access token obtained: $accessToken");
 
     // Salesforce REST API endpoint
-    $salesforceApiUrl = 'https://your_salesforce_instance_url/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
+    $salesforceApiUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
 
     // Make a GET request to Salesforce API
     $response = $client->get($salesforceApiUrl, [
