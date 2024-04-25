@@ -1,8 +1,5 @@
 <?php
 
-// Include the Composer autoloader
-require 'vendor/autoload.php';
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -57,11 +54,10 @@ LtUk7GtR6zZ4iYknt0KxBAA=
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
 
-use Firebase\JWT\JWT;
-
 // Generate JWT token
 $issuedAt = time();
 $expirationTime = $issuedAt + 3600; // JWT token expiration time (1 hour)
+
 $payload = array(
     'iss' => $salesforceClientId,
     'sub' => $salesforceUsername,
@@ -69,15 +65,15 @@ $payload = array(
     'exp' => $expirationTime,
 );
 
-// Log JWT payload
-logMessage("JWT payload: " . json_encode($payload));
-$jwt = JWT::encode($payload, $salesforcePrivateKey, 'RS256');
+// Create JWT token
+$jwt = \Firebase\JWT\JWT::encode($payload, $salesforcePrivateKey, 'RS256');
 
 // Log JWT token
 logMessage("JWT token generated: $jwt");
 
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
+
 $query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
 // Log the Salesforce query
@@ -89,14 +85,11 @@ curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
 curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $jwt"));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-// Log the cURL setup
-logMessage("cURL session set up for Salesforce API call.");
-
 // Execute cURL request to Salesforce API
 $response = curl_exec($ch);
 
 // Check for errors
-if(curl_error($ch)) {
+if (curl_error($ch)) {
     // Log cURL error
     logMessage("cURL error: " . curl_error($ch));
 }
@@ -129,6 +122,7 @@ if (empty($result) || !isset($result['records']) || empty($result['records'])) {
     logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
 }
 ?>
+
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
