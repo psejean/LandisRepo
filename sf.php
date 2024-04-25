@@ -7,7 +7,8 @@ $sf_config = array(
 	password      => 'a;kA5-8UdB', // no need to concat password token
 	url           => 'https://test.salesforce.com/services/oauth2/token',
 	grant_type    => 'password',
-	query_srv_url => '/services/data/v58.0/query/'
+	query_srv_url => '/services/data/v58.0/query/',
+	salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'
 );
 
 $soql_query = 'SELECT id, name from Account';
@@ -19,7 +20,7 @@ $curl_post_param  = 'grant_type='. $sf_config[grant_type];
 $curl_post_param .= '&client_id='. $sf_config[client_id];
 $curl_post_param .= '&client_secret='. $sf_config[client_secret];
 $curl_post_param .= '&username='. $sf_config[username];
-$curl_post_param .= '&password='. $sf_config[password];
+$curl_post_param .= '&password='. $sf_config[password]. $sf_config[salesforceSecurityToken];
 
 $curl_getToken = curl_init();
 
