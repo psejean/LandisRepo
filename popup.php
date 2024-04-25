@@ -76,6 +76,12 @@ if(curl_error($ch)) {
 // Close cURL session
 curl_close($ch);
 
+$CallerNumber = '';
+$CallerName = '';
+$StudentID = '';
+$ContactID = '';
+$ContactName = '';
+
 // Decode JSON response from Salesforce API
 $result = json_decode($response, true);
 
@@ -91,6 +97,7 @@ if (empty($result) || !isset($result['records']) || empty($result['records'])) {
     $ContactID = isset($result['records'][0]['Contact__c']) ? $result['records'][0]['Contact__c'] : '';
     $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
 }
+
 ?>
 
 <!doctype html>
