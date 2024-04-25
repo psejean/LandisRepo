@@ -57,8 +57,6 @@ LtUk7GtR6zZ4iYknt0KxBAA=
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
 
-use Firebase\JWT\JWT;
-
 // Generate JWT token
 $issuedAt = time();
 $expirationTime = $issuedAt + 3600; // JWT token expiration time (1 hour)
