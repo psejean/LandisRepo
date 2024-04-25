@@ -19,7 +19,7 @@ $ScenarioId = $_GET['ScenarioId'];
 logMessage("Script execution started.");
 
 // Define Salesforce credentials
-$salesforceUsername = 'edev_salesforce@collegelacite.ca.devfull';
+$salesforceUsername = 'psejea@collegelacite.ca.devfull';
 $salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforcePrivateKey = '-----BEGIN PRIVATE KEY-----
