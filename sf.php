@@ -1,87 +1,77 @@
 <?php
 
-$sf_config = array(
-	client_id     => '3MVG9gtjsZa8aaSV4ayM_wa_OC02dG7go88eZDfok180duLsZbrIORMt5m8G6raFO_6x4sq7HkanmoiyX0Nap', // from salesforce OAuth configuration (add new app ...)
-	client_secret => '05C0BB5E93F814FABB7B24D25F3EE72100BECA806D6209A3BB71E19658CBC413',
-	username      => 'integrationuser@lacitec.on.ca.devfull', // username login to salesforce
-	password      => 'a;kA5-8UdB', // no need to concat password token
-	url           => 'https://test.salesforce.com/services/oauth2/token',
-	grant_type    => 'password',
-	query_srv_url => '/services/data/v58.0/query/',
-	salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'
-);
+require_once 'vendor/autoload.php';
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
-$soql_query = 'SELECT id, name from Account';
+// Function to log messages to a file
+function logMessage($message) {
+    $logFile = 'salesforce_logs.txt';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp] $message\n";
+    file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+}
 
-// ---------
-// first act - get token from salesforce
+// Salesforce OAuth 2.0 details
+$salesforceLoginUrl = 'https://test.salesforce.com';
+$salesforceClientId = 'your_client_id'; // Replace with your Salesforce Connected App's client ID
+$salesforceClientSecret = 'your_client_secret'; // Replace with your Salesforce Connected App's client secret
+$salesforceUsername = 'your_salesforce_username'; 
+$salesforcePassword = 'your_salesforce_password';
+$salesforceSecurityToken = 'your_salesforce_security_token'; // Replace with your Salesforce security token
 
-$curl_post_param  = 'grant_type='. $sf_config[grant_type];
-$curl_post_param .= '&client_id='. $sf_config[client_id];
-$curl_post_param .= '&client_secret='. $sf_config[client_secret];
-$curl_post_param .= '&username='. $sf_config[username];
-$curl_post_param .= '&password='. $sf_config[password]. $sf_config[salesforceSecurityToken];
+// Log Salesforce credentials
+logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
 
-$curl_getToken = curl_init();
+// Initialize Guzzle HTTP client
+$client = new Client();
 
-curl_setopt_array($curl_getToken, array(
-	CURLOPT_URL            => $sf_config[url],
-	CURLOPT_RETURNTRANSFER => true,
-	CURLOPT_ENCODING       => "",
-	CURLOPT_MAXREDIRS      => 10,
-	CURLOPT_TIMEOUT        => 30,
-	CURLOPT_SSL_VERIFYPEER => false,
-	CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-	CURLOPT_CUSTOMREQUEST  => "POST",
-	CURLOPT_POSTFIELDS     => $curl_post_param,
-	CURLOPT_HTTPHEADER     => array("content-type: application/x-www-form-urlencoded"),
-));
+try {
+    // Salesforce OAuth 2.0 authentication endpoint
+    $authUrl = "$salesforceLoginUrl/services/oauth2/token";
 
-$response = curl_exec($curl_getToken);
-$err      = curl_error($curl_getToken);
+    // Parameters for OAuth 2.0 authentication
+    $authParams = [
+        'form_params' => [
+            'grant_type' => 'password',
+            'client_id' => $salesforceClientId,
+            'client_secret' => $salesforceClientSecret,
+            'username' => $salesforceUsername,
+            'password' => $salesforcePassword . $salesforceSecurityToken
+        ]
+    ];
 
-curl_close($curl_getToken);
+    // Make a POST request to obtain the access token
+    $authResponse = $client->post($authUrl, $authParams);
 
-if ($err)
-{
-	echo "cURL Error #:" . $err;
-	die();
-};
+    // Decode the JSON response
+    $authData = json_decode($authResponse->getBody(), true);
 
-$sf_token = json_decode($response, true);
+    // Extract access token
+    $accessToken = $authData['access_token'];
 
-echo "Salesforce token: \n";
-var_dump($sf_token);
+    // Log access token
+    logMessage("Access token obtained: $accessToken");
 
-// ----------
-// Second act - send a soql query to salesforce
+    // Salesforce REST API endpoint
+    $salesforceApiUrl = 'https://your_salesforce_instance_url/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
 
-$curl_url = $sf_token[instance_url] . $sf_config[query_srv_url] . '?q=' .urlencode($soql_query);
+    // Make a GET request to Salesforce API
+    $response = $client->get($salesforceApiUrl, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $accessToken
+        ]
+    ]);
 
-$curl_getSoql = curl_init();
-curl_setopt_array($curl_getSoql, array(
-	CURLOPT_URL            => $curl_url,
-	CURLOPT_RETURNTRANSFER => true,
-	CURLOPT_ENCODING       => "",
-	CURLOPT_MAXREDIRS      => 10,
-	CURLOPT_TIMEOUT        => 30,
-	CURLOPT_SSL_VERIFYPEER => false,
-	CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-	CURLOPT_CUSTOMREQUEST  => "GET",
-	CURLOPT_HTTPHEADER     => array('Authorization: '. $sf_token[token_type] .' '. $sf_token[access_token]),
-));
+    // Get response body
+    $result = $response->getBody();
 
-$response = curl_exec($curl_getSoql);
-$err      = curl_error($curl_getSoql);
+    // Output the result
+    echo $result;
+} catch (RequestException $e) {
+    // Log error if request fails
+    logMessage("Request failed: " . $e->getMessage());
+    echo "Failed to connect to Salesforce.";
+}
 
-curl_close($curl_getSoql);
-
-if ($err)
-{
-	echo "cURL Error #:" . $err;
-	die();
-};
-
-$sf_soql_reply = json_decode($response, true);
-echo "Salesforce SOQL reply: \n";
-var_dump($sf_soql_reply);
+?>
