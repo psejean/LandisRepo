@@ -3,18 +3,18 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Function to log messages to a file
-function logMessage($message) {
-    $logFile = 'salesforce_logs.txt';
-    $timestamp = date('Y-m-d H:i:s');
-    $logMessage = "[$timestamp] $message\n";
-    file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
-}
+// function logMessage($message) {
+//     $logFile = 'salesforce_logs.txt';
+//     $timestamp = date('Y-m-d H:i:s');
+//     $logMessage = "[$timestamp] $message\n";
+//     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+// }
 
 // Get ScenarioId from the URL
 $ScenarioId = $_GET['ScenarioId'];
 
 // Log the start of the script
-logMessage("Script execution started.");
+// logMessage("Script execution started.");
 
 // Define Salesforce credentials
 $salesforceUsername = 'edev_salesforce@collegelacite.ca.devfull';
@@ -50,18 +50,18 @@ LtUk7GtR6zZ4iYknt0KxBAA=
 -----END PRIVATE KEY-----';
 
 // Log Salesforce credentials
-logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
+// logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
 
 // Include Salesforce JWT token generation library
 require_once('jwt/JWT.php');
 use \Firebase\JWT\JWT;
 
 // Log the inclusion of JWT library
-logMessage("JWT library included.");
+// logMessage("JWT library included.");
 
 // Generate JWT token
 $issuedAt = time();
-$expirationTime = $issuedAt + 3600;  // JWT token expiration time (1 hour)
+$expirationTime = $issuedAt + 3600; // JWT token expiration time (1 hour)
 $payload = array(
     'iss' => $salesforceClientId,
     'sub' => $salesforceUsername,
@@ -70,12 +70,11 @@ $payload = array(
 );
 
 // Log JWT payload
-logMessage("JWT payload: " . json_encode($payload));
-
+// logMessage("JWT payload: " . json_encode($payload));
 $jwt = JWT::encode($payload, $salesforcePrivateKey, 'RS256');
 
 // Log JWT token
-logMessage("JWT token generated: $jwt");
+// logMessage("JWT token generated: $jwt");
 
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
@@ -91,7 +90,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer $jwt"));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 // Log the cURL setup
-logMessage("cURL session set up for Salesforce API call.");
+// logMessage("cURL session set up for Salesforce API call.");
 
 // Execute cURL request to Salesforce API
 $response = curl_exec($ch);
@@ -99,11 +98,11 @@ $response = curl_exec($ch);
 // Check for errors
 if(curl_error($ch)) {
     // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
+    // logMessage("cURL error: " . curl_error($ch));
 }
 
 // Log the cURL response
-logMessage("cURL response: $response");
+// logMessage("cURL response: $response");
 
 // Close cURL session
 curl_close($ch);
@@ -112,7 +111,7 @@ curl_close($ch);
 $result = json_decode($response, true);
 
 // Log Salesforce response
-logMessage("Salesforce response: " . json_encode($result));
+// logMessage("Salesforce response: " . json_encode($result));
 
 // Check if $result is empty or null or if records are empty
 if (empty($result) || !isset($result['records']) || empty($result['records'])) {
@@ -127,6 +126,5 @@ if (empty($result) || !isset($result['records']) || empty($result['records'])) {
     $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
 
     // Log extracted data
-    logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
+    // logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
 }
-
