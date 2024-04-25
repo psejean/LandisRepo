@@ -79,13 +79,17 @@ curl_close($ch);
 // Decode JSON response from Salesforce API
 $result = json_decode($response, true);
 
-// Extract data from Salesforce response
-$CallerNumber = $result['records'][0]['CallerNumber__c'];
-$CallerName = $result['records'][0]['CallerName__c'];
-$StudentID = $result['records'][0]['StudentID__c'];
-$ContactID = $result['records'][0]['Contact__c'];
-$ContactName = $result['records'][0]['ContactName__c'];
-
+// Check if $result is empty or null
+if (empty($result) || !isset($result['records']) || empty($result['records'])) {
+    // Handle the case when no records are returned
+    echo "No records found for the provided ScenarioId.";
+} else {
+    // Extract data from Salesforce response
+    $CallerNumber = $result['records'][0]['CallerNumber__c'];
+    $CallerName = $result['records'][0]['CallerName__c'];
+    $StudentID = $result['records'][0]['StudentID__c'];
+    $ContactID = $result['records'][0]['Contact__c'];
+    $ContactName = $result['records'][0]['ContactName__c'];
 ?>
 
 <!doctype html>
