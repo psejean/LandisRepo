@@ -57,7 +57,7 @@ $jwt = JWT::encode($payload, $salesforcePrivateKey, 'RS256');
 
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c FROM ContactCallLog__c WHERE ScenarioId__c='$ScenarioId'";
+$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
 // Set up cURL session for Salesforce API call
 $ch = curl_init();
