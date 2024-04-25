@@ -81,7 +81,7 @@ logMessage("JWT token generated: $jwt");
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
 
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name IS NOT NULL ORDER BY CreatedDate DESC LIMIT 1";
+$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
 // Log the Salesforce query
 logMessage("Salesforce query: $query");
@@ -112,6 +112,10 @@ $result = json_decode($response, true);
 
 // Log Salesforce response
 logMessage("Salesforce response: " . json_encode($result));
+
+// Echo the response for debugging
+echo "Salesforce Response: ";
+print_r($result);
 
 // Check if $result is empty or null or if records are empty
 if (empty($result) || !isset($result['records']) || empty($result['records'])) {
