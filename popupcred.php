@@ -1,6 +1,9 @@
 <?php
 
 require_once 'vendor/autoload.php';
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 
 // Function to log messages to a file
 function logMessage($message) {
@@ -35,81 +38,64 @@ $authParams = array(
 );
 
 
-// Initialize cURL session
-$ch = curl_init();
+// Initialize Guzzle HTTP client
+$client = new Client();
 
-// Set cURL options for authentication
-curl_setopt($ch, CURLOPT_URL, $authUrl);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($authParams));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+try {
+    // Make a POST request to obtain the access token
+    $authResponse = $client->post($authUrl, [
+        'form_params' => $authParams
+    ]);
 
-// Execute cURL request
-$authResponse = curl_exec($ch);
+    // Decode the JSON response
+    $authData = json_decode($authResponse->getBody(), true);
 
-// Check for errors
-if (curl_error($ch)) {
-    // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
-}
+    // Extract access token
+    $accessToken = $authData['access_token'];
 
-// Decode the JSON response
-$authData = json_decode($authResponse, true);
+    // Log access token
+    logMessage("Access token obtained: $accessToken");
 
-// Extract access token
-$accessToken = $authData['access_token'];
+    // Salesforce API endpoint for custom object query
+    $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
 
-// Log access token
-logMessage("Access token obtained: $accessToken");
+    // Query to retrieve data from Salesforce
+    $query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
-// Salesforce API endpoint for custom object query
-$salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
+    // Make a GET request to query Salesforce API
+    $response = $client->get($salesforceQueryUrl . urlencode($query), [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $accessToken
+        ]
+    ]);
 
-// Query to retrieve data from Salesforce
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name!=null LIMIT 1";
+    // Decode JSON response from Salesforce API
+    $result = json_decode($response->getBody(), true);
 
-// Set up cURL session for Salesforce API call
-curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    "Authorization: Bearer $accessToken", // Include the access token in the Authorization header
-    "Content-Type: application/json",     // Specify the content type as JSON
-));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // Log Salesforce response
+    logMessage("Salesforce response: " . json_encode($result));
 
-// Execute cURL request to Salesforce API
-$response = curl_exec($ch);
+    // Check if $result is empty or null or if records are empty
+    if (empty($result) || !isset($result['records']) || empty($result['records'])) {
+        // Handle the case when no records are returned
+        echo "No records found for the provided ScenarioId.";
+    } else {
+        // Extract data from Salesforce response
+        $CallerNumber = isset($result['records'][0]['CallerNumber__c']) ? $result['records'][0]['CallerNumber__c'] : '';
+        $CallerName = isset($result['records'][0]['CallerName__c']) ? $result['records'][0]['CallerName__c'] : '';
+        $StudentID = isset($result['records'][0]['StudentID__c']) ? $result['records'][0]['StudentID__c'] : '';
+        $ContactID = isset($result['records'][0]['Contact__c']) ? $result['records'][0]['Contact__c'] : '';
+        $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
 
-// Check for errors
-if (curl_error($ch)) {
-    // Log cURL error
-    logMessage("cURL error: " . curl_error($ch));
-}
+        // Log extracted data
+        logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
 
-// Close cURL session
-curl_close($ch);
-
-// Decode JSON response from Salesforce API
-$result = json_decode($response, true);
-
-// Log Salesforce response
-logMessage("Salesforce response: " . json_encode($result));
-
-// Check if $result is empty or null or if records are empty
-if (empty($result) || !isset($result['records']) || empty($result['records'])) {
-    // Handle the case when no records are returned
-    echo "No records found for the provided ScenarioId.";
-} else {
-    // Extract data from Salesforce response
-    $CallerNumber = isset($result['records'][0]['CallerNumber__c']) ? $result['records'][0]['CallerNumber__c'] : '';
-    $CallerName = isset($result['records'][0]['CallerName__c']) ? $result['records'][0]['CallerName__c'] : '';
-    $StudentID = isset($result['records'][0]['StudentID__c']) ? $result['records'][0]['StudentID__c'] : '';
-    $ContactID = isset($result['records'][0]['Contact__c']) ? $result['records'][0]['Contact__c'] : '';
-    $ContactName = isset($result['records'][0]['ContactName__c']) ? $result['records'][0]['ContactName__c'] : '';
-
-    // Log extracted data
-    logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
-
-    // Now you can use the extracted data in your HTML output as needed
+        // Now you can use the extracted data in your HTML output as needed
+    }
+} catch (RequestException $e) {
+    // Log error if request fails
+    logMessage("Request failed: " . $e->getMessage());
+    echo "Failed to connect to Salesforce.";
 }
 
 ?>
