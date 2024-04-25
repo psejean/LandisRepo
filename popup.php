@@ -52,7 +52,6 @@ logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $
 
 // Include Salesforce JWT token generation library
 require_once('jwt/JWT.php');
-use \Firebase\JWT\JWT;
 
 // Generate JWT token
 $issuedAt = time();
