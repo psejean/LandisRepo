@@ -107,6 +107,11 @@ logMessage("cURL response: $response");
 // Close cURL session
 curl_close($ch);
 
+// Check if response is empty
+if(empty($response)) {
+    echo "No response received from Salesforce.\n";
+}
+
 // Decode JSON response from Salesforce API
 $result = json_decode($response, true);
 
