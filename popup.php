@@ -1,8 +1,11 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once 'vendor/autoload.php';
+
+use Azure\Core\Credentials\AzureKeyCredential;
+use Azure\Identity\DefaultAzureCredentialBuilder;
+use Azure\Security\KeyVault\Certificates\CertificateClient;
+use Azure\Security\KeyVault\Certificates\CertificateContentType;
 
 // Function to log messages to a file
 function logMessage($message) {
@@ -12,44 +15,33 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
-// Get ScenarioId from the URL
-$ScenarioId = $_GET['ScenarioId'];
+// Azure Key Vault details
+$keyVaultUrl = 'YOUR_KEYVAULT_URL';
+$certificateName = 'LandisCert'; // Name of your certificate in Key Vault
 
-// Log the start of the script
-logMessage("Script execution started.");
+// Create Azure Key Vault Certificate client
+$credential = new DefaultAzureCredentialBuilder();
+$client = new CertificateClient($keyVaultUrl, new AzureKeyCredential($credential->build()));
+
+// Retrieve the certificate from Azure Key Vault
+$certificate = $client->getCertificate($certificateName);
+$certificateContents = $client->getCertificatePolicy($certificateName)->getContentType() === CertificateContentType::PFX ?
+    $client->getCertificatePolicy($certificateName)->getBase64EncodedValue() : $client->getCertificatePolicy($certificateName)->getX509Certificate();
+
+// Extract private key from certificate
+$certificatePem = "-----BEGIN CERTIFICATE-----\n" . chunk_split($certificateContents, 64, "\n") . "-----END CERTIFICATE-----\n";
+openssl_x509_export($certificatePem, $certificatePem);
+
+// Log fetched certificate
+logMessage("Fetched certificate from Azure Key Vault");
+
+// Rest of the script...
 
 // Define Salesforce credentials
 $salesforceUsername = 'psejea@collegelacite.ca.devfull';
 $salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
 $salesforceLoginUrl = 'https://test.salesforce.com';
-$salesforcePrivateKey = '-----BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCpboxNKqrErfxC
-r+MaES8JEcLYQdKJ5MThW7R5IAwqU5w6dQ27qh1Fi9CmYMKuhYRLGqlkrEk1oXFH
-0N8b7iByGlmsFMkAiianCpd+c+FOlaAfrWZAYt8tIbqaKh+Lju3eQ75Oq9sLGOk0
-eS2AyCYoOVoPp6/cjge5//drveX2+Nk4iUwBr7SmX9jcc/2Dwu1RtdDQtSvo2sv0
-4QgneHAQ9HVcDosBbUWPBypZbnAGDQUcASVjB3gwXRJfO8N3JsIVK2Zhg99EZXDq
-BWJrbhVIfgYN8Os4p+5ZgwNUuAIZH+PCPSe51VZcIdWcR3aM0c0vyt3Bh1hBuE/8
-ZdzREgUBAgMBAAECggEBAIzqh8Aqa2s3NWaVePGWNyN45TAN1rifT2wLZJeVIukV
-LwujjS929e+AsKGgOmsCWxxH6Xj0ndMAGgJb4yQMsmmUJt6rTt2nCSzG72bZpBtC
-8LFH+5IzaWDU+6j6vc/JqWbBuwcdggnBxzvASSshzDKKOLBqjCaI7j4xeKvgfeIg
-jQPJiw0hZoE6TWxxX5PE9ZPWX0o7ZN/RVzvk/2rixkpdJOWM64tPOuzh/ha4VgFh
-6lbgbnjO2be3Rj76sUURj6XbJZ7fYEcTFTKIB/YzTYFDCih8kShoP0cKViwSi/gy
-dILJeTgLXZi+OKviBdTccl/zcPWy+V9mkdjwttlMD50CgYEAwwqA7CYwgSU9w6lO
-M1dEv8Pf37IyeIj/EvHYdYOzPdSnuV4QZ0MKCKLnG5U2XgFIlKseNJu6c1vpORp6
-D1THrevHx457seTzCPWpBrHxgqrgDyRCK5mTLoxSbz5eArhmoQa7TyjSPFLQ2okN
-uAiKFv0LSmGqUR3K+rFEHFiCM5sCgYEA3mMEg7oq2LJROrfA7eCEdxJS1tHge5dm
-WT8El+G5C5FCj2iJdxM/Z/sNMjMGY/xcWBb/nKauX4YtpLipJf8C21XDla9Av2Ov
-r8XSFjaPzCbRS/6ou9mh2OiPFVZImds6nMGwJTybIQsUE9I8HgrVPnXKAxVf+rmw
-cwyNFdKw2ZMCgYAYtQXr5FKUqZEPbi0X1+A/oqKDheFa34/gaH6RNGPKW1v74WyW
-iCmHOouoNNi0Q9lb6+lhpLCT2HrM3wvDUWwSHiIqp2QH/wbChcwpqvT7JoZHpMI1
-H7lDVkdDDFWAZrepgl7MAlHPjnYimOYCACLuEpQRkhmvOOTzqO0F4jhsLQKBgAUl
-y5v0+jrr3b97M2cONGLBNNOuJgEWXxMfx05wtiTTZvQE2nG8K1KP2B1aWwKDe+u6
-FI6euRiS9YmDkL7FaV6EXLOhS+FiQFXUQWmsN6XlHCEjMuquPfXUZEN9LM8K6Q9p
-2Fb0US7xn7RZwHR9kbQRa+yoWQFnvPLczoM7zkYrAoGBAL6zUHkikVZkRFImBmqU
-6W7PbbmzIbSsYmZbZY2m0Kc1M2W0Sjtin+hW4S59csU5OsbdJEx7Z42rt7hHSt27
-ocOV7MrYEyuS+ZhfSNsDIsc9HApx6osZ485Z5zoINuLgHQq7NezYSWWb8KORCzxH
-mSt76OwLPAzZOxcBxxfY6r5q
------END PRIVATE KEY-----';
+$salesforcePrivateKey = $certificatePem; // Use the extracted private key
 
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
