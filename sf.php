@@ -1,8 +1,8 @@
 <?php
 
 require_once 'vendor/autoload.php';
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\{Client, RequestOptions};
 
 // Function to log messages to a file
 function logMessage($message) {
