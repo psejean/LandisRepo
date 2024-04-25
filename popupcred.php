@@ -66,7 +66,7 @@ logMessage("Access token obtained: $accessToken");
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
 
 // Query to retrieve data from Salesforce
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
+$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name!=null LIMIT 1";
 
 // Set up cURL session for Salesforce API call
 curl_setopt($ch, CURLOPT_URL, $salesforceQueryUrl . urlencode($query));
