@@ -1,11 +1,8 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
-use Azure\Core\Credentials\AzureKeyCredential;
-use Azure\Identity\DefaultAzureCredentialBuilder;
-use Azure\Security\KeyVault\Certificates\CertificateClient;
-use Azure\Security\KeyVault\Certificates\CertificateContentType;
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Function to log messages to a file
 function logMessage($message) {
@@ -15,14 +12,15 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
-// Log fetched certificate
-logMessage("Fetched certificate from Azure Key Vault");
+// Get ScenarioId from the URL
+$ScenarioId = $_GET['ScenarioId'];
 
-// Rest of the script...
+// Log the start of the script
+logMessage("Script execution started.");
 
 // Define Salesforce credentials
 $salesforceUsername = 'psejea@collegelacite.ca.devfull';
-$salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC1dZPK9KPGWJVuUrjEuVN4Ynn1IAvavLU9INXqkq_Wi2D3q4H.OuXHGC.IE2';
+$salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforcePrivateKey = '-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCpboxNKqrErfxC
@@ -208,4 +206,4 @@ body {
       </tbody>
 </table>
 </body>
-</html>
+</html> 
