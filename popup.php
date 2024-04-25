@@ -15,6 +15,9 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
+// Get ScenarioId from the URL
+$ScenarioId = $_GET['ScenarioId'];
+
 // Azure Key Vault details
 $keyVaultUrl = 'https://landiskey.vault.azure.net/';
 $certificateName = 'LandisCert'; // Name of your certificate in Key Vault
