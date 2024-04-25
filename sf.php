@@ -53,18 +53,30 @@ try {
     // Log access token
     logMessage("Access token obtained: $accessToken");
 
-    // Salesforce REST API endpoint
-    $salesforceApiUrl = 'https://your_salesforce_instance_url/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
+    // Salesforce REST API endpoint to query Account object
+    $salesforceApiUrl = 'https://your_salesforce_instance_url/services/data/v52.0/query?q=SELECT+Name,+Type,+Industry+FROM+Account+LIMIT+1';
 
-    // Make a GET request to Salesforce API
+    // Make a GET request to Salesforce API to retrieve Account data
     $apiResponse = file_get_contents($salesforceApiUrl, false, stream_context_create([
         'http' => [
             'header' => "Authorization: Bearer $accessToken\r\n"
         ]
     ]));
 
-    // Output the result
-    echo $apiResponse;
+    // Decode the JSON response
+    $accountData = json_decode($apiResponse, true);
+
+    // Extract account information
+    $accountName = $accountData['records'][0]['Name'];
+    $accountType = $accountData['records'][0]['Type'];
+    $accountIndustry = $accountData['records'][0]['Industry'];
+
+    // Display account information
+    echo "<h1>Account Information</h1>";
+    echo "<p><strong>Name:</strong> $accountName</p>";
+    echo "<p><strong>Type:</strong> $accountType</p>";
+    echo "<p><strong>Industry:</strong> $accountIndustry</p>";
+
 } catch (Exception $e) {
     // Log error if request fails
     logMessage("Request failed: " . $e->getMessage());
