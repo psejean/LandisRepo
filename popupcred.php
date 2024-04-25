@@ -14,9 +14,9 @@ function logMessage($message) {
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC02dG7go88eZDfok180duLsZbrIORMt5m8G6raFO_6x4sq7HkanmoiyX0Nap'; // Replace with your Salesforce Connected App's client ID
 $salesforceClientSecret = '05C0BB5E93F814FABB7B24D25F3EE72100BECA806D6209A3BB71E19658CBC413'; // Replace with your Salesforce Connected App's client secret
-$salesforceUsername = 'edev_salesforce@collegelacite.ca.devfull'; 
+$salesforceUsername = 'integrationuser@lacitec.on.ca.devfull'; 
 $salesforcePassword = 'a;kA5-8UdB';
-$salesforceSecurityToken = 'oxqN4wFlX8qEk3gw4Zx29a7aG'; // Replace with your Salesforce security token
+$salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'; // Replace with your Salesforce security token
 
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
@@ -28,7 +28,7 @@ $authParams = array(
     'client_id' => $salesforceClientId,
     'client_secret' => $salesforceClientSecret,
     'username' => $salesforceUsername,
-    'password' => 'a;kA5-8UdBoxqN4wFlX8qEk3gw4Zx29a7aG'
+    'password' => 'a;kA5-8UdBzPe1wuotnE6eungIJDH1WyYM5'
 );
 
 // Initialize cURL session
