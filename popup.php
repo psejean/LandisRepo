@@ -16,7 +16,7 @@ function logMessage($message) {
 }
 
 // Azure Key Vault details
-$keyVaultUrl = 'YOUR_KEYVAULT_URL';
+$keyVaultUrl = 'https://landiskey.vault.azure.net/';
 $certificateName = 'LandisCert'; // Name of your certificate in Key Vault
 
 // Create Azure Key Vault Certificate client
@@ -39,7 +39,7 @@ logMessage("Fetched certificate from Azure Key Vault");
 
 // Define Salesforce credentials
 $salesforceUsername = 'psejea@collegelacite.ca.devfull';
-$salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
+$salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC1dZPK9KPGWJVuUrjEuVN4Ynn1IAvavLU9INXqkq_Wi2D3q4H.OuXHGC.IE2';
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforcePrivateKey = $certificatePem; // Use the extracted private key
 
