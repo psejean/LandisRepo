@@ -28,7 +28,7 @@ $authParams = array(
     'client_id' => $salesforceClientId,
     'client_secret' => $salesforceClientSecret,
     'username' => $salesforceUsername,
-    'password' => $salesforcePassword . $salesforceSecurityToken
+    'password' => 'a;kA5-8UdBoxqN4wFlX8qEk3gw4Zx29a7aG'
 );
 
 // Initialize cURL session
