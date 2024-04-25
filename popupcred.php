@@ -10,6 +10,9 @@ function logMessage($message) {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
+// Get ScenarioId from the URL
+$ScenarioId = $_GET['ScenarioId'];
+
 // Salesforce OAuth 2.0 details
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC02dG7go88eZDfok180duLsZbrIORMt5m8G6raFO_6x4sq7HkanmoiyX0Nap'; // Replace with your Salesforce Connected App's client ID
