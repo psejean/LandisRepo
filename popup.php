@@ -3,9 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Function to log messages to the PHP error log
 function logMessage($message) {
-    error_log($message);
+    echo "<script>console.log('$message');</script>";
 }
 
 // Get ScenarioId from the URL
