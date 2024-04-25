@@ -20,7 +20,7 @@ logMessage("Script execution started.");
 
 // Define Salesforce credentials
 $salesforceUsername = 'psejea@collegelacite.ca.devfull';
-$salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
+$salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC1dZPK9KPGWJVuUrjEuVN4Ynn1IAvavLU9INXqkq_Wi2D3q4H.OuXHGC.IE2';
 $salesforceLoginUrl = 'https://test.salesforce.com';
 $salesforcePrivateKey = '-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCpboxNKqrErfxC
