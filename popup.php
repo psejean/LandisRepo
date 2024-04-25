@@ -1,12 +1,18 @@
-<?PHP
+<?php
+
 // Include the Composer autoloader
 require 'vendor/autoload.php';
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Function to log messages to a file
 function logMessage($message) {
-    echo "<script>console.log('$message');</script>";
+    $logFile = 'salesforce_logs.txt';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp] $message\n";
+    file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
 // Get ScenarioId from the URL
@@ -14,7 +20,7 @@ $ScenarioId = $_GET['ScenarioId'];
 
 // Log the start of the script
 logMessage("Script execution started.");
- 
+
 // Define Salesforce credentials
 $salesforceUsername = 'edev_salesforce@collegelacite.ca.devfull';
 $salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
@@ -51,8 +57,7 @@ LtUk7GtR6zZ4iYknt0KxBAA=
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
 
-// Include Salesforce JWT token generation library
-require_once('jwt/JWT.php');
+use Firebase\JWT\JWT;
 
 // Generate JWT token
 $issuedAt = time();
