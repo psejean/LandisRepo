@@ -20,9 +20,6 @@ $salesforceUsername = 'integrationuser@lacitec.on.ca.devfull';
 $salesforcePassword = 'a;kA5-8UdB';
 $salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'; // Replace with your Salesforce security token
 
-// Log Salesforce credentials
-logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
-
 // Initialize Guzzle HTTP client
 $client = new Client();
 
@@ -50,9 +47,6 @@ try {
     // Extract access token
     $accessToken = $authData['access_token'];
 
-    // Log access token
-    logMessage("Access token obtained: $accessToken");
-
     // Salesforce REST API endpoint
     $salesforceApiUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
 
@@ -70,7 +64,6 @@ try {
     echo $result;
 } catch (RequestException $e) {
     // Log error if request fails
-    logMessage("Request failed: " . $e->getMessage());
     echo "Failed to connect to Salesforce.";
 }
 
