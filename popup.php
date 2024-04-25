@@ -81,7 +81,7 @@ $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.co
 $query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
 
 // Log the Salesforce query
-logMessage("Salesforce query: $query");
+//logMessage("Salesforce query: $query");
 
 // Set up cURL session for Salesforce API call
 $ch = curl_init();
