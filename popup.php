@@ -22,34 +22,7 @@ logMessage("Script execution started.");
 $salesforceUsername = 'psejea@collegelacite.ca.devfull';
 $salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
 $salesforceLoginUrl = 'https://test.salesforce.com';
-$salesforcePrivateKey = '-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjboZHobdj2mCZ
-YBzFCym/m+U1f3scOn10vSUeQ9drrIkFYegvo8a8w/OzUVc6HmDfjDFWlAccS4Ys
-gRDyc0JEX3fycdIm13yzK13iA0iD8eHO0WO1B370t2JrorcGNztVj5xc/vg6KWoD
-sJ6sSyctoN2BLFdsZmFkZ4dS2DB5KuBtA7EdwX4YWSro9jPgVbsm63JrS1hh35M9
-HtBOeTi/xu8/Qc9HqFervJbbEItgdKG9sv5X682ct04ozow7bfsTUxbq7PUiywvo
-DCSXgF8idn/Ia0m47o8OFXFphxaRj6e2ZMLtdDlkLmRcDwz6IbHz7n0k8ogj2EhX
-9YkPAhW7AgMBAAECggEATmRH9ZkM2dEYT8lp01wg6N8yyP/+gdJOdg35/XPmIygt
-y06krCE/RTEqtoMYN3D135Sj39b+OCTD1ZoNEnaVvS0b4EeXWXk4P8rX6/7OLDf8
-K5OFY4KWc3R5OY7hgpJAnDBX/MVyNJfD2cRAv/0GbF0CkqC9yGmtYpdEMkkvqxZQ
-zQuUwSomQpPW1nEKfUD6HjbmjdnUJwZT2uYd63swYtCepZCA2FNzKGr9um+oZZAn
-yOvnhdJT87IJ0XQEyDmtOmKdTKR0cwa52y1b+ZyEtxTm8xYaZWmH+pSqrakVXocA
-ilKLROuPZZLD2BtrIKBIB+WgtqapJZm7OIbrZmla1QKBgQDaZcPCtrdfnbjqXj2m
-FVHJ++/V2Gi8MkfWwm8jgk3mDtGAy8rZTn/juLb/q4XcHx+bnWIp1s0ndaXB/DRU
-xPHZdHN2+XBSRDQt6VwJzL7I7V1BXq5QeObLIjwq8Yx8mjAG1BEzpUY+f+XKRk0R
-6v6G2pKtzYG/YssEzycsFYByTwKBgQC/kg0cxT8ETa4phHi9oGEp3+06TFE4qMyN
-jLAh7EQ+Yo9GDIDQveohL7YUKbhOheSmm88IZ/krcI+ivpQuJxOPGXDiw5ZN5QaE
-h4g+iOcNlaHxaSfNY2QEf+UryZFvGOCrEr93bOaYHspX4MoLiqH0qUvolarTYSQP
-MnMZCJDm1QKBgHS2M5KH8KEheaON72YlOIs3nujp+LayLCAB0kDortaGDsHEpsfQ
-opnAqdMiB6wl2c9goQf46bPvtEBhllnC0fhCuj3XeYYNOtFaRzxZdY+NAewgPAl3
-QudFiV/trAUepRHRHMw7w7k8wkGBpkgwDAtnHUHSdEch9ZrBVY7Cgt0TAoGAbXJB
-r4g5Qnom4G1gleXE3Smj3MSxOo+lndEc56SWMJYaiMin55o44xDhE4/qTmJMiatG
-kuTkBB9g0HfVLLECiaTdS5C2lHYeTSUpf6CzcJ1mUgfjx4HbKH7xLR0Ry8kIwnQJ
-k29SJuKgc6hnhkSD1sXKKm0nlXBQK6aE/25XaqkCgYEAlk4LR3gG1yCVRO37bcB9
-R3LD6v81dsLUkGAimQIzOIejfWLvnixUicY9OKJztuoqjgyGnKTFob5ag5fF7OaH
-9CsqPNji6trD/7Xk9vMdEJbohrtgq3+NqNeh+VjDJffk6jDiWwL2+p7eRN4hVLig
-LtUk7GtR6zZ4iYknt0KxBAA=
------END PRIVATE KEY-----';
+$salesforcePrivateKey = getenv('PRIVATE_KEY'); // Read private key from environment variable
 
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
