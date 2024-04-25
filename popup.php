@@ -81,7 +81,7 @@ logMessage("JWT token generated: $jwt");
 // Salesforce API endpoint for custom object query
 $salesforceQueryUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v59.0/query/?q=';
 
-$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name='$ScenarioId'";
+$query = "SELECT CallerNumber__c, CallerName__c, StudentID__c, Contact__c, ContactName__c, Name FROM ContactCallLog__c WHERE Name IS NOT NULL ORDER BY CreatedDate DESC LIMIT 1";
 
 // Log the Salesforce query
 logMessage("Salesforce query: $query");
