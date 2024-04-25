@@ -1,9 +1,5 @@
 <?php
 
-require_once 'vendor/autoload.php';
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\{Client, RequestOptions};
-
 // Function to log messages to a file
 function logMessage($message) {
     $logFile = 'salesforce_logs.txt';
@@ -20,50 +16,58 @@ $salesforceUsername = 'integrationuser@lacitec.on.ca.devfull';
 $salesforcePassword = 'a;kA5-8UdB';
 $salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'; // Replace with your Salesforce security token
 
-// Initialize Guzzle HTTP client
-$client = new Client();
-
 try {
     // Salesforce OAuth 2.0 authentication endpoint
     $authUrl = "$salesforceLoginUrl/services/oauth2/token";
 
     // Parameters for OAuth 2.0 authentication
     $authParams = [
-        'form_params' => [
-            'grant_type' => 'password',
-            'client_id' => $salesforceClientId,
-            'client_secret' => $salesforceClientSecret,
-            'username' => $salesforceUsername,
-            'password' => $salesforcePassword . $salesforceSecurityToken
+        'grant_type' => 'password',
+        'client_id' => $salesforceClientId,
+        'client_secret' => $salesforceClientSecret,
+        'username' => $salesforceUsername,
+        'password' => $salesforcePassword . $salesforceSecurityToken
+    ];
+
+    // Set context options for HTTP request
+    $contextOptions = [
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query($authParams)
         ]
     ];
 
+    // Create context for stream
+    $context = stream_context_create($contextOptions);
+
     // Make a POST request to obtain the access token
-    $authResponse = $client->post($authUrl, $authParams);
+    $authResponse = file_get_contents($authUrl, false, $context);
 
     // Decode the JSON response
-    $authData = json_decode($authResponse->getBody(), true);
+    $authData = json_decode($authResponse, true);
 
     // Extract access token
     $accessToken = $authData['access_token'];
 
+    // Log access token
+    logMessage("Access token obtained: $accessToken");
+
     // Salesforce REST API endpoint
-    $salesforceApiUrl = 'https://collegelacite--devfull.sandbox.lightning.force.com/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
+    $salesforceApiUrl = 'https://your_salesforce_instance_url/services/data/v52.0/query?q=SELECT+Id+FROM+Account+LIMIT+1';
 
     // Make a GET request to Salesforce API
-    $response = $client->get($salesforceApiUrl, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . $accessToken
+    $apiResponse = file_get_contents($salesforceApiUrl, false, stream_context_create([
+        'http' => [
+            'header' => "Authorization: Bearer $accessToken\r\n"
         ]
-    ]);
-
-    // Get response body
-    $result = $response->getBody();
+    ]));
 
     // Output the result
-    echo $result;
-} catch (RequestException $e) {
+    echo $apiResponse;
+} catch (Exception $e) {
     // Log error if request fails
+    logMessage("Request failed: " . $e->getMessage());
     echo "Failed to connect to Salesforce.";
 }
 
