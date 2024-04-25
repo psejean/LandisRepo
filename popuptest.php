@@ -49,7 +49,7 @@ FI6euRiS9YmDkL7FaV6EXLOhS+FiQFXUQWmsN6XlHCEjMuquPfXUZEN9LM8K6Q9p
 6W7PbbmzIbSsYmZbZY2m0Kc1M2W0Sjtin+hW4S59csU5OsbdJEx7Z42rt7hHSt27
 ocOV7MrYEyuS+ZhfSNsDIsc9HApx6osZ485Z5zoINuLgHQq7NezYSWWb8KORCzxH
 mSt76OwLPAzZOxcBxxfY6r5q
------END PRIVATE KEY-----'
+-----END PRIVATE KEY-----';
 
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
