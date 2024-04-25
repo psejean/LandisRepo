@@ -14,11 +14,11 @@ function logMessage($message) {
 
 // Salesforce OAuth 2.0 details
 $salesforceLoginUrl = 'https://test.salesforce.com';
-$salesforceClientId = 'your_client_id'; // Replace with your Salesforce Connected App's client ID
-$salesforceClientSecret = 'your_client_secret'; // Replace with your Salesforce Connected App's client secret
-$salesforceUsername = 'your_salesforce_username'; 
-$salesforcePassword = 'your_salesforce_password';
-$salesforceSecurityToken = 'your_salesforce_security_token'; // Replace with your Salesforce security token
+$salesforceClientId = '3MVG9gtjsZa8aaSV4ayM_wa_OC02dG7go88eZDfok180duLsZbrIORMt5m8G6raFO_6x4sq7HkanmoiyX0Nap'; // Replace with your Salesforce Connected App's client ID
+$salesforceClientSecret = '05C0BB5E93F814FABB7B24D25F3EE72100BECA806D6209A3BB71E19658CBC413'; // Replace with your Salesforce Connected App's client secret
+$salesforceUsername = 'integrationuser@lacitec.on.ca.devfull'; 
+$salesforcePassword = 'a;kA5-8UdB';
+$salesforceSecurityToken = 'zPe1wuotnE6eungIJDH1WyYM5'; // Replace with your Salesforce security token
 
 // Log Salesforce credentials
 logMessage("Salesforce credentials: Username - $salesforceUsername, ClientId - $salesforceClientId");
