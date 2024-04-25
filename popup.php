@@ -66,7 +66,14 @@ $payload = array(
 );
 
 // Create JWT token
-$jwt = \Firebase\JWT\JWT::encode($payload, $salesforcePrivateKey, 'RS256');
+$header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
+$encodedHeader = base64_encode($header);
+$encodedPayload = base64_encode(json_encode($payload));
+$data = $encodedHeader . '.' . $encodedPayload;
+$signature = '';
+openssl_sign($data, $signature, $salesforcePrivateKey, OPENSSL_ALGO_SHA256);
+$encodedSignature = base64_encode($signature);
+$jwt = $data . '.' . $encodedSignature;
 
 // Log JWT token
 logMessage("JWT token generated: $jwt");
@@ -122,7 +129,6 @@ if (empty($result) || !isset($result['records']) || empty($result['records'])) {
     logMessage("Extracted data: CallerNumber - $CallerNumber, CallerName - $CallerName, StudentID - $StudentID, ContactID - $ContactID, ContactName - $ContactName");
 }
 ?>
-
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
