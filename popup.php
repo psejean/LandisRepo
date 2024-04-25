@@ -12,7 +12,7 @@ $ScenarioId = $_GET['ScenarioId'];
 
 // Log the start of the script
 logMessage("Script execution started.");
-
+ 
 // Define Salesforce credentials
 $salesforceUsername = 'edev_salesforce@collegelacite.ca.devfull';
 $salesforceClientId = '3MVG9gtjsZa8aaSW0LGVNeGQ_A9o7iTmvW_vb_pUP5oz5at2YX7O4QuHm.fuGLOoMMgjZEylOZSM6Z222x4fh';
